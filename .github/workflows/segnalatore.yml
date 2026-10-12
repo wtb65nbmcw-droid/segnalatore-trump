@@ -1,1 +1,54 @@
+name: Segnalatore Trump
 
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      modalita:
+        description: "test = verifica fonti · run = controllo normale"
+        type: choice
+        options: [test, run]
+        default: test
+
+permissions:
+  contents: write
+
+concurrency:
+  group: segnalatore
+  cancel-in-progress: false
+
+jobs:
+  controlla:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Esegui il segnalatore
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SEC_CONTACT: ${{ secrets.SEC_CONTACT }}
+          MODALITA: ${{ github.event.inputs.modalita }}
+        run: |
+          if [ "$MODALITA" = "test" ]; then
+            python3 monitor.py --test
+          else
+            python3 monitor.py
+          fi
+
+      - name: Salva lo stato
+        if: always() && github.event.inputs.modalita != 'test'
+        run: |
+          mkdir -p data
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A data
+          if git diff --cached --quiet; then echo "Stato invariato"; exit 0; fi
+          git commit -q -m "Aggiorna stato [skip ci]"
+          for i in 1 2 3; do
+            git pull -q --rebase --autostash && git push -q && exit 0
+            sleep 5
+          done
+          exit 1
