@@ -55,7 +55,7 @@ except Exception:  # pragma: no cover
 # ════════════════════════════════════════════════════════════════════════════
 
 # Argomenti dei post di Trump da segnalare: "borsa", "crypto", "macro"
-ENABLED_TOPICS = ["borsa", "crypto", "macro"]
+ENABLED_TOPICS = ["borsa", "crypto", "macro", "consigli", "altri"]
 
 # Punteggio minimo perché un post venga segnalato (ogni parola chiave vale 1-3 punti).
 #   2 = equilibrato (consigliato) · 3 = solo post più specifici · 1 = tutto
@@ -75,6 +75,7 @@ SEC_PERSONS = [
     {"name": "Donald J. Trump", "cik": 947033},
     {"name": "Donald J. Trump Jr.", "cik": 2016181},
     {"name": "Eric Trump", "cik": 2057754},
+    {"name": "Ivanka Trump", "cik": 1406847},
 ]
 
 # Aziende collegate alla famiglia: segnala i loro 8-K/10-Q/10-K (es. acquisti di bitcoin)
@@ -84,6 +85,11 @@ SEC_COMPANIES = [
     {"name": "Trump Media & Technology Group", "ticker": "DJT", "cik": 1849635},
     {"name": "American Bitcoin Corp", "ticker": "ABTC"},
     {"name": "ALT5 Sigma (tesoreria WLFI)", "ticker": "ALTS"},
+    # Società minori: segnala solo i depositi in cui compare un membro della famiglia Trump
+    {"name": "PSQ Holdings (PublicSquare)", "ticker": "PSQH", "cik": 1847064, "only_family": True},
+    {"name": "Dominari Holdings", "ticker": "DOMH", "cik": 12239, "only_family": True},
+    {"name": "Unusual Machines", "ticker": "UMAC", "only_family": True},
+    {"name": "GrabAGun Digital", "ticker": "PEW", "only_family": True},
 ]
 SEC_COMPANY_FORMS = {"8-K", "8-K/A", "10-Q", "10-K", "10-K/A", "6-K", "13F-HR", "N-PORT-P"}
 SEC_OWNERSHIP_FORMS_PREFIX = ("3", "4", "5", "144", "SC 13", "SCHEDULE 13")
@@ -110,26 +116,45 @@ STATEMENT_QUERIES = [
     'Trump (says OR said OR tells OR urges OR warns OR predicts OR touts OR remarks) '
     '(stocks OR "stock market" OR Dow OR Nasdaq OR "S&P 500" OR bitcoin OR crypto OR Fed OR '
     'Powell OR "interest rates" OR "rate cut" OR oil OR gold OR dollar OR markets) when:1d',
+    'Trump (urges OR tells OR says OR said OR advises OR recommends) (buy OR invest OR sell OR '
+    '"good time to buy" OR "buying" OR "selling") (stocks OR shares OR gold OR silver OR bitcoin OR '
+    'oil OR "real estate" OR bonds OR dollar OR crypto OR houses) when:1d',
+    'Trump (says OR said OR warns OR predicts) (yen OR yuan OR euro OR "real estate" OR housing OR '
+    'mortgage OR "sovereign wealth fund" OR Nikkei OR "emerging markets" OR "private equity" OR ETF '
+    'OR copper OR "rare earths" OR wheat OR soybeans OR steel) when:1d',
 ]
 
 # Query Google News: movimenti di portafoglio delle entità Trump
 #   (query, regex che il titolo deve contenere, etichetta)
 _MOVE = (r"buy|bought|purchas|acquir|sell|sold|sale|stake|swap|moves?|moved|transfer|dump|"
-         r"accumulat|treasury|disclos|holding|reserve|invest|trade|trades|position|deposit|withdr")
+         r"accumulat|treasury|disclos|holding|reserve|invest|trade|trades|position|deposit|withdr|"
+         r"merger|merge|deal|licens|develop|tower|hotel|golf|resort|real estate|property|launch|"
+         r"fund|partner|expan|rotat")
 PORTFOLIO_QUERIES = [
     ('"World Liberty Financial" OR WLFI (buys OR bought OR sells OR sold OR acquires OR purchase '
      'OR swap OR treasury OR moves OR transfers OR wallet) when:1d',
      r"World Liberty|WLFI|USD1", "World Liberty Financial"),
     ('"Trump Media" (bitcoin OR BTC OR CRO OR treasury OR buys OR bought OR sells OR sold OR '
-     'acquires OR stake OR ETF) when:1d',
+     'acquires OR acquisition OR merger OR deal OR stake OR ETF) when:1d',
      r"Trump Media|\bDJT\b|Truth\.Fi", "Trump Media (DJT)"),
     ('"American Bitcoin" (bitcoin OR BTC OR reserve OR buys OR acquires OR sells OR holdings) '
      'when:1d',
      r"American Bitcoin|\bABTC\b", "American Bitcoin (ABTC)"),
-    ('("Eric Trump" OR "Donald Trump Jr" OR "Trump Jr." OR "Trump family" OR "Trump sons") '
-     '(stake OR invests OR investment OR buys OR bought OR sells OR sold OR acquires OR shares) '
+    ('("Eric Trump" OR "Donald Trump Jr" OR "Trump Jr." OR "Trump family" OR "Trump sons" OR '
+     '"Lara Trump" OR "Barron Trump" OR "Tiffany Trump") '
+     '(stake OR invests OR investment OR buys OR bought OR sells OR sold OR acquires OR shares OR deal) '
      'when:1d',
-     r"Eric Trump|Trump Jr|Trump family|Trump sons|Trumps", "Famiglia Trump"),
+     r"Eric Trump|Trump Jr|Trump family|Trump sons|Lara Trump|Barron|Tiffany", "Famiglia Trump"),
+    ('("Ivanka Trump" OR "Jared Kushner" OR "Affinity Partners") (acquires OR stake OR buys OR '
+     'invests OR deal OR sells OR sold OR fund OR bid) when:2d',
+     r"Ivanka|Kushner|Affinity", "Ivanka Trump / Jared Kushner / Affinity Partners"),
+    ('"Trump Organization" (acquires OR acquisition OR deal OR sells OR sold OR buys OR bought OR '
+     '"real estate" OR development OR licensing OR tower OR golf OR hotel OR resort) when:2d',
+     r"Trump Organization|Trump Org\b", "Trump Organization (economia reale)"),
+    ('Trump (broker OR "wealth manager" OR "financial adviser" OR "managed accounts" OR '
+     '"brokerage accounts" OR "personal trades") (trades OR stocks OR disclosure OR sold OR bought) '
+     'when:3d',
+     r"Trump", "Trump – gestori e conti di gestione"),
     ('Trump ("periodic transaction report" OR "financial disclosure" OR "278-T" OR '
      '"disclosure shows" OR "trading disclosure") (stocks OR bonds OR trades OR purchases OR '
      'bought OR sold) when:2d',
@@ -138,6 +163,9 @@ PORTFOLIO_QUERIES = [
      'sells OR buys OR treasury OR wallet OR moves) when:1d',
      r"\$?TRUMP|Trump meme|memecoin|Fight Fight Fight", "Memecoin $TRUMP"),
 ]
+
+# Titoli da ignorare (es. il programma di risparmio per i bambini "Trump Accounts")
+EXCLUDE_NEWS_RX = re.compile(r"\bTrump Accounts?\b", re.I)
 
 # Dopo quanti errori consecutivi di una fonte ricevi un avviso
 FAIL_ALERT_THRESHOLD = 12
@@ -241,7 +269,44 @@ TOPICS = {
             (r"\bdrill,? baby,? drill\b", 1),
         ],
     },
+    "consigli": {
+        "label": "Operazioni consigliate", "emoji": "💡",
+        "patterns": [
+            (r"\b(great|good|perfect|wonderful|best|right) time to (buy|invest|sell|own)\b", 3),
+            (r"\b(you|everyone|investors?|people|americans?|we) (should|must|need to|have to) "
+             r"(buy|sell|invest|hold|own|get)\b", 3),
+            (r"\b(buy|sell|load up on|invest in|dump|short|hold|accumulate) "
+             r"(now|today|more|stocks?|gold|silver|bitcoin|crypto|oil|bonds?|shares|real estate|"
+             r"the dip|houses?|homes?)\b", 3),
+            (r"\b(i('| a)?m|i am|we are|we're) (buying|selling|investing|loading)\b", 3),
+            (r"\bnow is the time to\b", 2),
+            (r"\b(tremendous|great|fantastic|incredible|smart|safe) (investment|opportunity)\b", 2),
+            (r"\bget in (now|early|while)\b", 2),
+            (r"\b(stay|remain) (invested|long)\b", 2),
+            (r"\bdon'?t (sell|panic)\b", 3),
+        ],
+    },
+    "altri": {
+        "label": "Altri mercati (valute, immobiliare, mondo)", "emoji": "🌍",
+        "patterns": [
+            (r"\b(yen|yuan|renminbi|euro|pound sterling|swiss franc|rupee|peso)\b", 1),
+            (r"\bcurrency manipulat\w+", 2),
+            (r"\b(real estate|housing market|home ?prices?|mortgage rates?|home ?buyers?|housing)\b", 2),
+            (r"\b(nikkei|dax|ftse|cac ?40|hang seng|shanghai (composite|index)|kospi|sensex|stoxx)\b", 2),
+            (r"\b(etfs?|index funds?|mutual funds?|hedge funds?|private equity|private credit)\b", 2),
+            (r"\b(semiconductors?|steel|aluminum|shipbuilding|pharma(ceuticals?)?|defense stocks?)\b", 1),
+            (r"\bsovereign wealth fund\b", 3),
+            (r"\bemerging markets?\b", 2),
+        ],
+    },
 }
+
+# Frasi legali standard da non mostrare negli estratti degli 8-K
+BOILERPLATE_RX = re.compile(
+    r"forward[- ]looking|shall not constitute|offer to sell|solicitation|securities laws|safe harbor|"
+    r"private securities litigation|no offer|where to find it|participants in|incorporated (herein )?by "
+    r"reference|pursuant to the requirements|duly authorized|registration statement|prospectus|"
+    r"proxy statement", re.I)
 
 # Parole che rendono interessante un 8-K (estratto mostrato nella notifica)
 EXCERPT_RX = re.compile(
@@ -436,6 +501,40 @@ def http_get(url, headers=None, timeout=25, retries=2):
 
 def http_get_json(url, headers=None, timeout=25):
     return json.loads(http_get(url, headers=headers, timeout=timeout))
+
+
+def fmt_hm(dt):
+    if not dt:
+        return "?"
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=timezone.utc)
+    return dt.astimezone(TZ_LOCAL).strftime("%H:%M")
+
+
+def dm(date_str):
+    """'2026-10-09' → '09/10'"""
+    m = re.match(r"(\d{4})-(\d{2})-(\d{2})", date_str or "")
+    return f"{m.group(3)}/{m.group(2)}" if m else (date_str or "")
+
+
+def nice_name(n):
+    """'Trump Donald J. JR' → 'Donald J. Trump Jr.'"""
+    parts = (n or "").replace(",", " ").split()
+    if len(parts) > 1 and parts[0].lower() == "trump":
+        rest = [x for x in parts[1:] if x.upper() not in ("JR", "JR.", "SR", "SR.")]
+        jr = any(x.upper().startswith("JR") for x in parts[1:])
+        return " ".join(rest) + " Trump" + (" Jr." if jr else "")
+    return n or ""
+
+
+def short_company(name):
+    name = (name or "").replace("Trump Media & Technology Group", "Trump Media")
+    name = re.sub(r"[,.]?\s+(Corp\.?|Corporation|Inc\.?|Holdings,? Inc\.?|Group|Technology Group Corp\.?)$", "", name or "", flags=re.I)
+    return name.strip()
+
+
+SHORT_TOPIC = {"borsa": "Borsa", "crypto": "Crypto", "macro": "Macro", "consigli": "Consiglio operativo",
+               "altri": "Altri mercati"}
 
 
 # ─────────────────────────────── Telegram ───────────────────────────────────
@@ -697,19 +796,15 @@ def fetch_truth_posts():
     raise RuntimeError(" | ".join(errors))
 
 
+
 def format_post(p, sc, source_name, preview=False):
-    pr_icon = "🔴" if sc["priority"] == "ALTA" else "🟡"
-    topics = " · ".join(f'{TOPICS[t]["emoji"]} {TOPICS[t]["label"]}' for t in sc["topics"])
-    kind = {"repost": " (repost)", "quote": " (citazione)", "reply": " (risposta)"}.get(p["kind"], "")
-    head = "🧪 <b>ANTEPRIMA</b> (post già pubblicato)\n" if preview else ""
-    return (
-        f"{head}{pr_icon} <b>TRUMP su Truth Social{kind}</b> – priorità {sc['priority']}\n"
-        f"{topics}\n"
-        f"🔑 {esc(', '.join(sc['words']))}\n\n"
-        f"{highlight(p['text'], sc['spans'])}\n\n"
-        f"🕒 {fmt_time(p['created'])} (ora italiana)\n"
-        f'🔗 <a href="{esc(p["url"])}">Apri il post</a> · fonte: {esc(source_name)}'
-    )
+    icon = "🔴" if sc["priority"] == "ALTA" else "🟡"
+    topics = ", ".join(SHORT_TOPIC.get(t, t) for t in sc["topics"])
+    kind = {"repost": " (repost)", "quote": " (citazione)"}.get(p["kind"], "")
+    pre = "🧪 " if preview else ""
+    return (f"{pre}{icon} <b>Trump su Truth Social</b>{kind} · {topics}\n"
+            f"{highlight(p['text'], sc['spans'], 450)}\n"
+            f'🕒 {fmt_hm(p["created"])} · <a href="{esc(p["url"])}">apri post</a>')
 
 
 def check_truth(st, notifier):
@@ -759,9 +854,9 @@ def trusted(source):
     return any(t.lower() in s for t in TRUSTED_SOURCES)
 
 
+
 def _news_line(n, extra=""):
-    return (f'• <a href="{esc(n["link"])}">{esc(n["title"])}</a>\n'
-            f'   <i>{esc(n["source"])} · {fmt_time(n["date"])}</i>{extra}')
+    return f'• <a href="{esc(n["link"])}">{esc(n["title"])}</a> — <i>{esc(n["source"])}, {fmt_hm(n["date"])}</i>'
 
 
 def collect_news(st, preview=False):
@@ -783,6 +878,8 @@ def collect_news(st, preview=False):
                 continue
             if "trump" not in n["title"].lower() or not trusted(n["source"]):
                 continue
+            if EXCLUDE_NEWS_RX.search(n["title"]):
+                continue
             sc = score_text(n["title"])
             if sc:
                 n["sc"] = sc
@@ -802,7 +899,7 @@ def collect_news(st, preview=False):
                 continue
             if not re.search(must, n["title"], re.I) or not re.search(_MOVE, n["title"], re.I):
                 continue
-            if not trusted(n["source"]):
+            if not trusted(n["source"]) or EXCLUDE_NEWS_RX.search(n["title"]):
                 continue
             portfolio.setdefault(label, []).append(n)
             seen.add(k)
@@ -811,25 +908,21 @@ def collect_news(st, preview=False):
     return statements, portfolio, keys
 
 
+
 def format_statements(items, preview=False):
-    items = sorted(items, key=lambda n: n["date"] or now_utc(), reverse=True)[:8]
-    head = "🧪 <b>ANTEPRIMA</b>\n" if preview else ""
-    lines = []
-    for n in items:
-        icon = "🔴" if n["sc"]["priority"] == "ALTA" else "🟡"
-        lines.append(f"{icon} " + _news_line(n)[2:])
-    return (f"{head}🗣️ <b>Dichiarazioni di Trump riportate dalla stampa</b>\n"
-            f"<i>(parole a voce, interviste, conferenze)</i>\n\n" + "\n\n".join(lines))
+    items = sorted(items, key=lambda n: n["date"] or now_utc(), reverse=True)[:6]
+    pre = "🧪 " if preview else ""
+    lines = [("🔴 " if n["sc"]["priority"] == "ALTA" else "🟡 ") + _news_line(n)[2:] for n in items]
+    return f"{pre}🗣️ <b>Trump dice (stampa)</b>\n" + "\n".join(lines)
 
 
 def format_portfolio_news(groups, preview=False):
-    head = "🧪 <b>ANTEPRIMA</b>\n" if preview else ""
+    pre = "🧪 " if preview else ""
     parts = []
     for label, items in groups.items():
-        items = sorted(items, key=lambda n: n["date"] or now_utc(), reverse=True)[:5]
+        items = sorted(items, key=lambda n: n["date"] or now_utc(), reverse=True)[:4]
         parts.append(f"<b>{esc(label)}</b>\n" + "\n".join(_news_line(n) for n in items))
-    return (f"{head}📰 <b>Notizie su acquisti/vendite delle entità Trump</b>\n\n"
-            + "\n\n".join(parts))
+    return f"{pre}📰 <b>Notizie su operazioni</b>\n" + "\n".join(parts)
 
 
 def check_news(st, notifier):
@@ -963,31 +1056,37 @@ def parse_generic_xml(xml_text):
     }
 
 
-def _tx_line(tx):
-    icon, label = TX_CODES.get((tx["code"] or "").upper(), ("⚪", f"Codice {tx['code']}"))
-    if tx["code"] in (None, "") and tx["ad"]:
-        icon, label = ("🟢", "Acquisizione") if tx["ad"] == "A" else ("🔴", "Cessione")
-    line = f"{icon} <b>{label}</b>"
+
+TX_VERB = {"P": ("🟢", "Acquisto"), "L": ("🟢", "Acquisto"), "S": ("🔴", "Vendita"),
+           "A": ("🟢", "Assegnazione azioni"), "D": ("🔴", "Cessione"), "F": ("🔴", "Trattenuta fiscale"),
+           "G": ("🎁", "Donazione"), "M": ("🔄", "Esercizio/conversione"), "C": ("🔄", "Conversione"),
+           "X": ("🔄", "Esercizio opzioni"), "U": ("🔴", "Adesione a OPA")}
+
+
+def _tx_line(tx, owner, issuer):
+    code = (tx["code"] or "").upper()
+    icon, verb = TX_VERB.get(code, ("⚪", "Operazione"))
+    if not code and tx["ad"]:
+        icon, verb = ("🟢", "Acquisto") if tx["ad"] == "A" else ("🔴", "Vendita")
+    line = f"{icon} Segnalat{'a' if verb[-1] == 'a' or verb in ('Assegnazione azioni', 'Donazione', 'Conversione', 'Cessione', 'Trattenuta fiscale') else 'o'} <b>{verb.lower()}</b> di {esc(owner)} su {esc(issuer)}"
+    qty = ""
     if tx["shares"]:
-        line += f" · {fmt_num(tx['shares'])} {'derivati' if tx['deriv'] else 'azioni'}"
+        qty = f"{fmt_num(tx['shares'])} {'derivati' if tx['deriv'] else 'azioni'}"
     try:
         px = float(tx["price"] or 0)
         if px > 0:
-            line += f" @ ${fmt_num(px, 2)}"
+            qty += f" a ${fmt_num(px, 2)}"
             if tx["shares"]:
-                line += f" (≈ {fmt_usd(px * float(tx['shares']))})"
+                qty += f" (≈ {fmt_usd(px * float(tx['shares']))})"
     except ValueError:
         pass
-    sub = []
-    if tx["date"]:
-        sub.append(f"data {tx['date']}")
-    if tx["security"]:
-        sub.append(esc(tx["security"][:60]))
-    if tx["after"]:
-        sub.append(f"dopo: {fmt_num(tx['after'])}")
+    if qty:
+        line += f": {qty.strip()}"
     if tx["di"] == "I":
-        sub.append("indiretta" + (f" ({esc(tx['nature'][:50])})" if tx["nature"] else ""))
-    return line + ("\n     <i>" + " · ".join(sub) + "</i>" if sub else "")
+        line += " (indiretta)"
+    if tx["date"]:
+        line += f" · {dm(tx['date'])}"
+    return line
 
 
 def excerpt_8k(f):
@@ -1008,7 +1107,8 @@ def excerpt_8k(f):
             continue
         for sent in re.split(r"(?<=[.!?])\s+", text):
             sent = sent.strip()
-            if 40 < len(sent) < 450 and EXCERPT_RX.search(sent) and sent not in found:
+            if (40 < len(sent) < 450 and EXCERPT_RX.search(sent) and not BOILERPLATE_RX.search(sent)
+                    and sent not in found):
                 found.append(sent)
             if len(found) >= 3:
                 break
@@ -1018,31 +1118,61 @@ def excerpt_8k(f):
     return out[:700] + ("…" if len(out) > 700 else "")
 
 
+
+_VERB_IT = {"purchased": "Acquisto", "acquired": "Acquisto", "bought": "Acquisto",
+            "sold": "Vendita", "disposed": "Vendita"}
+
+
+def it_trade_summary(text):
+    """Frase inglese 'purchased 2,000,000 shares ... at $1.95 per share' → riga italiana breve."""
+    if not text:
+        return ""
+    m = re.search(r"(purchased|acquired|bought|sold|disposed of)\s+(?:an aggregate of\s+|an additional\s+)?"
+                  r"([\d,\.]+)\s+(?:shares|units|bitcoin|BTC)?.{0,120}?\$([\d,\.]+)\s+per share", text, re.I)
+    if m:
+        verb = _VERB_IT.get(m.group(1).split()[0].lower(), "Operazione")
+        try:
+            n = float(m.group(2).replace(",", ""))
+            px = float(m.group(3).replace(",", ""))
+            return f"{'🟢' if verb == 'Acquisto' else '🔴'} {verb}: {fmt_num(n)} azioni a ${fmt_num(px, 2)} (≈ {fmt_usd(n * px)})"
+        except ValueError:
+            return ""
+    m = re.search(r"(acquired|purchased|bought|sold)\s+(?:an additional\s+)?([\d,\.]+)\s+(?:bitcoin|BTC)\b"
+                  r"(?:.{0,80}?\$([\d,\.]+)\s*(million|billion))?", text, re.I)
+    if m:
+        verb = _VERB_IT.get(m.group(1).lower(), "Operazione")
+        try:
+            nb = fmt_num(float(m.group(2).replace(",", "")), 0)
+        except ValueError:
+            nb = m.group(2)
+        out = f"{'🟢' if verb == 'Acquisto' else '🔴'} {verb}: {nb} bitcoin"
+        if m.group(3):
+            mult = 1e9 if m.group(4).lower() == "billion" else 1e6
+            try:
+                out += f" (≈ {fmt_usd(float(m.group(3).replace(',', '')) * mult)})"
+            except ValueError:
+                pass
+        return out
+    return ""
+
+
 def format_filing(f, entity, preview=False):
-    """Costruisce il messaggio per un deposito SEC. Ritorna None se non va segnalato."""
+    """Messaggio breve per un deposito SEC. Ritorna None se non va segnalato."""
     form = f["form"].upper()
-    head = "🧪 <b>ANTEPRIMA</b> (deposito già pubblicato)\n" if preview else ""
-    link = f'🔗 <a href="{filing_index_url(f)}">Documento SEC</a>'
-    who = esc(entity["name"])
+    pre = "🧪 " if preview else ""
+    link = f'🔗 <a href="{filing_index_url(f)}">SEC Form {esc(f["form"])}</a> · {dm(f["date"])}'
 
     if form in ("3", "4", "5", "3/A", "4/A", "5/A"):
         o = parse_ownership_xml(sec_get(raw_doc_url(f)))
-        owners = ", ".join(x for x in o["owners"] if x) or entity["name"]
-        if entity["kind"] == "company" and "trump" not in owners.lower():
+        owner = nice_name(", ".join(x for x in o["owners"] if x) or entity["name"])
+        if entity["kind"] == "company" and "trump" not in owner.lower():
             return None
-        issuer = esc(o["issuer"] or "?") + (f" ({esc(o['ticker'])})" if o["ticker"] else "")
-        lines = [_tx_line(tx) for tx in o["txs"][:12]]
+        issuer = short_company(o["issuer"] or "?") + (f" ({o['ticker']})" if o["ticker"] else "")
+        lines = [_tx_line(tx, owner, issuer) for tx in o["txs"][:10]]
         if not lines and o["holdings"]:
-            lines = [f"📌 Posizione: {fmt_num(h['after'])} – {esc((h['security'] or '')[:60])}"
-                     + (" (indiretta)" if h["di"] == "I" else "") for h in o["holdings"][:8]]
-        kind = {"3": "posizione iniziale", "4": "variazione partecipazione", "5": "riepilogo annuale"}
-        buys = any((tx["code"] or "") in "PL" and tx["code"] for tx in o["txs"])
-        sells = any((tx["code"] or "") in "SDFU" and tx["code"] for tx in o["txs"])
-        tag = "🟢🔴 ACQUISTI E VENDITE" if buys and sells else ("🟢 ACQUISTO" if buys else ("🔴 VENDITA" if sells else ""))
-        return (f"{head}🏛️ <b>SEC Form {form}</b> – {kind.get(form[0], '')} {('· ' + tag) if tag else ''}\n"
-                f"👤 <b>{esc(owners)}</b>\n🏢 Società: <b>{issuer}</b>\n\n"
-                + ("\n".join(lines) or "(nessuna transazione elencata)")
-                + f"\n\n📅 Depositato: {f['date']}\n{link}")
+            h = o["holdings"][0]
+            lines = [f"📌 <b>Posizione</b>: {esc(owner)} · {fmt_num(h['after'])} azioni {esc(issuer)}"]
+        return pre + "\n".join(lines or [f"⚪ {esc(owner)} · {esc(issuer)}: nessuna operazione elencata"]) + "\n" + link
 
     if form.startswith(("SC 13", "SCHEDULE 13", "144")):
         g = {}
@@ -1051,54 +1181,54 @@ def format_filing(f, entity, preview=False):
                 g = parse_generic_xml(sec_get(raw_doc_url(f)))
             except Exception as e:
                 log(f"XML {form} non leggibile: {e}")
-        persons = ", ".join(g.get("persons") or []) or entity["name"]
-        if entity["kind"] == "company" and "trump" not in persons.lower():
+        persons = nice_name((g.get("persons") or [entity["name"]])[0])
+        if entity["kind"] == "company" and "trump" not in " ".join(g.get("persons") or [""]).lower():
             return None
+        issuer = short_company(g.get("issuer") or "?")
         if form.startswith("144"):
-            body = (f"🔴 <b>Intenzione di VENDERE</b> (Form 144)\n"
-                    f"🏢 Società: <b>{esc(g.get('issuer') or '?')}</b>\n"
-                    + (f"Quantità: {fmt_num(g['units_sold'])} titoli\n" if g.get("units_sold") else "")
-                    + (f"Valore: {fmt_usd(g['market_value'])}\n" if g.get("market_value") else "")
-                    + (f"Data vendita prevista: {esc(g['sale_date'])}\n" if g.get("sale_date") else ""))
-        else:
-            kind = "13D (partecipazione attiva >5%)" if "13D" in form else "13G (partecipazione passiva >5%)"
-            amend = " – aggiornamento" if form.endswith("/A") else ""
-            body = (f"📊 <b>Schedule {kind}{amend}</b>\n"
-                    f"🏢 Società: <b>{esc(g.get('issuer') or '?')}</b>\n"
-                    + (f"Possesso: {fmt_num(g['amount'])} titoli" if g.get("amount") else "")
-                    + (f" = <b>{esc(g['pct'])}%</b>" if g.get("pct") else "") + "\n"
-                    + (f"Data evento: {esc(g['event'])}\n" if g.get("event") else ""))
-            detail = g.get("funds") or ""
-            if g.get("tx_desc") and "not effected any" not in g["tx_desc"]:
-                detail = g["tx_desc"] + " " + detail
-            if detail.strip():
-                body += f"📝 <i>{esc(detail.strip()[:600])}</i>\n"
-        return (f"{head}🏛️ <b>SEC – {esc(form)}</b>\n👤 <b>{esc(persons)}</b>\n{body}\n"
-                f"📅 Depositato: {f['date']}\n{link}")
+            try:
+                n = float(g["units_sold"]) if g.get("units_sold") else None
+                val = float(g["market_value"]) if g.get("market_value") else None
+            except ValueError:
+                n = val = None
+            body = f"🔴 <b>Vendita prevista</b>: {esc(persons)} · " + (f"{fmt_num(n)} azioni " if n else "") + esc(issuer)
+            if val:
+                body += f" (≈ {fmt_usd(val)})"
+            if g.get("sale_date"):
+                body += f" · {esc(g['sale_date'])}"
+            return pre + body + "\n" + link
+        body = f"📊 <b>Quota{' aggiornata' if form.endswith('/A') else ''}</b>: {esc(persons)} in {esc(issuer)}"
+        if g.get("pct"):
+            body += f" · {esc(g['pct']).replace('.', ',')}%"
+        if g.get("amount"):
+            body += f" ({fmt_num(g['amount'])} azioni)"
+        extra = it_trade_summary(" ".join(x for x in (g.get("funds"), g.get("tx_desc")) if x))
+        return pre + body + ("\n" + extra if extra else "") + "\n" + link
 
     if entity["kind"] == "company" and form in SEC_COMPANY_FORMS:
+        name = entity["name"].split(" (")[0]
+        name = short_company(name) + (f" ({entity['ticker']})" if entity.get("ticker") else "")
         items = ""
         if f.get("items"):
-            items = ", ".join(f"{i} {ITEMS_8K.get(i, '')}".strip() for i in f["items"].split(","))
+            items = ", ".join(ITEMS_8K.get(i, i) for i in f["items"].split(",") if i != "9.01")[:80]
         ex = ""
         if form.startswith(("8-K", "6-K")):
             try:
                 ex = excerpt_8k(f)
             except Exception:
                 ex = ""
-        kind = {"8-K": "evento rilevante", "8-K/A": "evento rilevante (rettifica)",
-                "10-Q": "trimestrale", "10-K": "annuale", "10-K/A": "annuale (rettifica)",
-                "13F-HR": "portafoglio trimestrale 13F", "6-K": "comunicazione", "N-PORT-P": "portafoglio fondo"}
-        return (f"{head}🏢 <b>{who}</b> – SEC {esc(form)} ({kind.get(form, '')})\n"
-                + (f"📋 {esc(items)}\n" if items else "")
-                + (f"📝 <i>{esc(f['desc'])}</i>\n" if f.get("desc") and f["desc"] != form else "")
-                + (f"\n💬 «{esc(ex)}»\n" if ex else "")
-                + f"\n📅 Depositato: {f['date']}\n{link}")
+        kind = {"10-Q": "trimestrale", "10-K": "bilancio annuale", "13F-HR": "portafoglio 13F",
+                "N-PORT-P": "portafoglio fondo"}.get(form, "comunicazione")
+        head = f"🏢 <b>{esc(name)}</b>: {esc(form)} ({esc(items) if items else kind})"
+        summ = it_trade_summary(ex)
+        if summ:
+            head += "\n" + summ
+        elif ex:
+            head += f"\n💬 <i>«{esc(ex[:170])}{'…' if len(ex) > 170 else ''}»</i>"
+        return pre + head + "\n" + link
 
     if entity["kind"] == "person":
-        return (f"{head}🏛️ <b>SEC – {esc(form)}</b>\n👤 <b>{who}</b>\n"
-                + (f"📝 {esc(f['desc'])}\n" if f.get("desc") else "")
-                + f"📅 Depositato: {f['date']}\n{link}")
+        return f"{pre}🏛️ <b>{esc(nice_name(entity['name']))}</b>: deposito SEC {esc(form)}\n{link}"
     return None
 
 
@@ -1123,6 +1253,8 @@ def check_sec(st, notifier):
                 continue
             form = f["form"].upper()
             if ent["kind"] == "company" and form not in SEC_COMPANY_FORMS and not is_ownership_form(form):
+                continue
+            if ent.get("only_family") and not is_ownership_form(form):
                 continue
             new_total += 1
             try:
@@ -1221,27 +1353,29 @@ def wallet_movements(address):
     return sorted(txs.values(), key=lambda t: t["time"] or now_utc())
 
 
+
+def _amts(legs, n=3):
+    legs = sorted(legs, key=lambda l: -l["usd"])[:n]
+    return ", ".join(f"{fmt_num(l['amount'], 0 if (l['amount'] >= 1000 or abs(l['amount'] - round(l['amount'])) < 0.005) else 2)} "
+                     f"{esc(l['symbol'])}" for l in legs)
+
+
 def format_wallet_tx(w, tx, preview=False):
     ins = [l for l in tx["legs"] if l["dir"] == "in"]
     outs = [l for l in tx["legs"] if l["dir"] == "out"]
+    name = esc(w["name"].split(" – ")[0])
+    pre = "🧪 " if preview else ""
+    tail = (f'\n🕒 {fmt_hm(tx["time"])} · <a href="https://etherscan.io/tx/{tx["hash"]}">Etherscan</a>')
     if ins and outs:
-        kind = "🔄 <b>SWAP</b> – venduto " + ", ".join(sorted({l["symbol"] for l in outs})) + \
-               " → comprato " + ", ".join(sorted({l["symbol"] for l in ins}))
-    elif ins:
-        kind = "🟢 <b>ENTRATA</b> di fondi (acquisto/ricezione)"
-    else:
-        kind = "🔴 <b>USCITA</b> di fondi (vendita/trasferimento)"
-    lines = []
-    for l in sorted(tx["legs"], key=lambda l: -l["usd"])[:8]:
-        sign = "+" if l["dir"] == "in" else "−"
-        cp = esc(l["cp_name"]) if l.get("cp_name") else short_addr(l["cp"])
-        arrow = "da" if l["dir"] == "in" else "verso"
-        lines.append(f"{sign}{fmt_num(l['amount'], 2 if l['amount'] < 1000 else 0)} {esc(l['symbol'])} "
-                     f"(≈ {fmt_usd(l['usd'])}) {arrow} {cp}")
-    head = "🧪 <b>ANTEPRIMA</b> (movimento già avvenuto)\n" if preview else ""
-    return (f"{head}🐋 <b>{esc(w['name'])}</b>\n{kind}\n\n" + "\n".join(lines) +
-            f"\n\n🕒 {fmt_time(tx['time'])}\n"
-            f'🔗 <a href="https://etherscan.io/tx/{tx["hash"]}">Vedi su Etherscan</a>')
+        usd = sum(l["usd"] for l in ins)
+        return (f"{pre}🔄 <b>{name}</b>: scambio · venduto {_amts(outs)} → comprato {_amts(ins)} "
+                f"(≈ {fmt_usd(usd)})" + tail)
+    legs = ins or outs
+    usd = sum(l["usd"] for l in legs)
+    cp = next((l.get("cp_name") or short_addr(l.get("cp")) for l in sorted(legs, key=lambda l: -l["usd"])), "?")
+    if ins:
+        return f"{pre}🟢 <b>{name}</b>: ricevuti {_amts(ins)} (≈ {fmt_usd(usd)}) da {esc(cp)}" + tail
+    return f"{pre}🔴 <b>{name}</b>: inviati {_amts(outs)} (≈ {fmt_usd(usd)}) a {esc(cp)}" + tail
 
 
 def check_wallets(st, notifier, preview=False):
@@ -1321,11 +1455,8 @@ def run_once(st, notifier, news=None):
         st["started_at"] = now_utc().isoformat(timespec="seconds")
         lines = [f"{'✅' if ok else '❌'} {SOURCE_LABELS[k]}" + ("" if ok else f" – <i>{esc(r[:120])}</i>")
                  for k, (ok, r) in results.items()]
-        notifier.send(
-            "🚀 <b>Segnalatore Trump & Mercati attivo</b>\n\n" + "\n".join(lines) +
-            f"\n\nArgomenti: {', '.join(TOPICS[t]['label'] for t in ENABLED_TOPICS)}\n"
-            f"Soglia on-chain: {fmt_usd(ONCHAIN_MIN_USD)}\n"
-            "Da ora riceverai solo le novità (i contenuti già pubblicati sono stati ignorati).")
+        notifier.send("🚀 <b>Segnalatore attivo</b>\n" + "\n".join(lines) +
+                      "\nDa ora ricevi solo le novità.")
     return results
 
 
