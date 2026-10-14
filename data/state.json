@@ -9,8 +9,7 @@
  },
  "health": {
   "news": {
-   "fails": 1,
-   "last_error": "Google News non raggiungibile: HTTP 503 su https://news.google.com/rss/search?q=Trump+%28says+OR+said+OR+tells+OR+urges+OR+warns+OR+predicts+OR+touts+OR+"
+   "fails": 0
   },
   "sec": {
    "fails": 0
@@ -787,7 +786,27 @@
    "e745879858e915d5",
    "1561727fa0c51f60",
    "774f8ae95133cf75",
-   "0d2a664dd3d684f6"
+   "0d2a664dd3d684f6",
+   "6a701130e90c8fac",
+   "1b85043c43456fce",
+   "a2550205175ac53b",
+   "c6a8172770e21b95",
+   "aaf77b62ce6ae2a3",
+   "3728e274afa6363f",
+   "ae225b3be7cc7820",
+   "199a24bf7bf04b7f",
+   "2f78046cba886484",
+   "a7d461fd9855214e",
+   "009f2990a85cd01c",
+   "cd71280f87815048",
+   "0aaf1ac0d128c4cc",
+   "7a13f7bd8a4c3176",
+   "9d795edbbc135cb0",
+   "515192be9d50a4bd",
+   "f93dcd8c52a20857",
+   "6691a911d29a6111",
+   "6dfee27cbb15d706",
+   "19c5d06f88521e93"
   ],
   "sec": [
    "0000891092-01-500491",
@@ -1258,7 +1277,9 @@
    "117439109117320192",
    "117439113014880144",
    "117439118252449992",
-   "117439121961898835"
+   "117439121961898835",
+   "117440207836405365",
+   "117440248541514637"
   ],
   "wallet:0x5be9a4959308a0d0c7bc0870e319314d8d957dbb": [
    "0x4cc6948347e02d3655f9b1ea79fed0a3a2401ddfaa86101414090cdbe1da8563",
