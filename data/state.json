@@ -29,11 +29,6 @@
  },
  "seen": {
   "news": [
-   "8270fc386adbea98",
-   "a1f2581e4b723c66",
-   "87b78185edb072d0",
-   "49eaf05fa3c2d89f",
-   "4c0d0b9c0cae5688",
    "1d0837c85ff0ca6e",
    "0cae8405869f7ad5",
    "33bfc29fedb65acd",
@@ -1528,7 +1523,12 @@
    "1acbbaf2e6844019",
    "20df2c8006c74cdf",
    "bf56489bf0f9866a",
-   "b315a86eece81df8"
+   "b315a86eece81df8",
+   "f6b302f77caee1c2",
+   "e437f0e13c47914b",
+   "3ece7d319f91c2b2",
+   "ed6fdabfc0ab3ec6",
+   "ddf027c957888283"
   ],
   "sec": [
    "0000891092-01-500491",
