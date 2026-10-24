@@ -18,8 +18,7 @@
    "fails": 0
   },
   "wallets": {
-   "fails": 1,
-   "last_error": "HTTP 503 su https://eth.blockscout.com/api/v2/addresses/0x5be9a4959308a0d0c7bc0870e319314d8d957dbb/token-transfers?type=ER"
+   "fails": 0
   }
  },
  "init": {
@@ -30,13 +29,6 @@
  },
  "seen": {
   "news": [
-   "027ca6b683ae76c2",
-   "994d9462b98fa182",
-   "15d43b9a71ddeb17",
-   "7edfd64bf900ffa0",
-   "80a44b663145e002",
-   "3e09941bc1affeb1",
-   "5316f6fd999eaff7",
    "800225f7c8d384c4",
    "667e6bbf3d6bca3f",
    "f9d35920d0fcf5ca",
@@ -1529,7 +1521,14 @@
    "bcf1124781ac3329",
    "c0f31d28a7b8ab16",
    "128728eec1dbc34e",
-   "9de24b13b5a28aa3"
+   "9de24b13b5a28aa3",
+   "58e461771bd77136",
+   "d5be6dfd3b28d487",
+   "e6996e49cc268760",
+   "24c28e120740691c",
+   "e3d3216e449f875d",
+   "cf818d1111609891",
+   "348dadf4d2e70e17"
   ],
   "sec": [
    "0000891092-01-500491",
