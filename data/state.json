@@ -18,7 +18,8 @@
    "fails": 0
   },
   "wallets": {
-   "fails": 0
+   "fails": 1,
+   "last_error": "HTTP 503 su https://eth.blockscout.com/api/v2/addresses/0x5be9a4959308a0d0c7bc0870e319314d8d957dbb/token-transfers?type=ER"
   }
  },
  "init": {
