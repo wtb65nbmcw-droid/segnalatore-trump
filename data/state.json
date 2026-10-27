@@ -9,8 +9,7 @@
  },
  "health": {
   "news": {
-   "fails": 1,
-   "last_error": "Google News non raggiungibile: HTTP 503 su https://news.google.com/rss/search?q=Trump+%28says+OR+said+OR+tells+OR+urges+OR+warns+OR+predicts+OR+touts+OR+"
+   "fails": 0
   },
   "sec": {
    "fails": 0
@@ -30,23 +29,6 @@
  },
  "seen": {
   "news": [
-   "6c7c5fd10065e4ee",
-   "d70ea4644bf51388",
-   "195e62a572ac0f16",
-   "f73a2eac1e5dcdd1",
-   "c3e357d1cd236128",
-   "0f25da97f023a774",
-   "a1be6dd5ddefe1a8",
-   "a08be8b424981a7c",
-   "12d35cf3ac9583ed",
-   "b2815e5d4bf67f9d",
-   "92c089023cd7bd0b",
-   "dbdd5662e212fea9",
-   "1c62f813c9d92946",
-   "dbe6bce521d11d13",
-   "04a74a39cb33ad4f",
-   "a2e1dcb3eff108e1",
-   "e3e69dfbc9c806f0",
    "ba147376a5f4a88e",
    "422fecf964faaddc",
    "d43375f8372994db",
@@ -1529,7 +1511,24 @@
    "79fc97b1280b83dd",
    "fd651f193de1fe11",
    "8dffe605c227a4ad",
-   "763fac5c38dd5683"
+   "763fac5c38dd5683",
+   "64e15c298e90a18e",
+   "2fe99d56ba5d9fb8",
+   "e1d099872950a4f5",
+   "216f7ec57d3003b6",
+   "910074594598bde2",
+   "8ced8898ac8fae54",
+   "68a62674d4ea2544",
+   "fae9ff60fd5078d2",
+   "317ffa32d10d1d73",
+   "476c4a55efd73096",
+   "2c60729dcf845aef",
+   "c7b2130333117a2e",
+   "42b5efc1685491d1",
+   "87ac5b5839383e40",
+   "1952f9b427532190",
+   "73bbef96a9418967",
+   "f4f50379464aed8a"
   ],
   "sec": [
    "0000891092-01-500491",
