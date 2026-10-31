@@ -18,7 +18,8 @@
    "fails": 0
   },
   "wallets": {
-   "fails": 0
+   "fails": 1,
+   "last_error": "HTTP 500 su https://eth.blockscout.com/api/v2/addresses/0x5be9a4959308a0d0c7bc0870e319314d8d957dbb/token-transfers?type=ER"
   }
  },
  "init": {
@@ -29,21 +30,6 @@
  },
  "seen": {
   "news": [
-   "c27884167d011631",
-   "dec2cbe922b531ca",
-   "a601207f4c25b1e4",
-   "585bfa6cde59c71b",
-   "6340d7c5ad6dbe77",
-   "7d4f6f0cea99176e",
-   "fa0d9938b69349e4",
-   "ad12b1598523c2ae",
-   "05b763ac97340d0b",
-   "38738899837200f7",
-   "91b1d71bf3d30db3",
-   "23a957656d30370c",
-   "2bb486d38077f2a9",
-   "1707b02b812ea7d6",
-   "7dcc1f99bca035bc",
    "a99134b18c523192",
    "64b6cd299797193a",
    "4c3e33d1a5e8d1d6",
@@ -1528,7 +1514,22 @@
    "b323ee11888239f4",
    "4b30410750c3a247",
    "bdea2133fecff002",
-   "5f60b08d2ab2d1ab"
+   "5f60b08d2ab2d1ab",
+   "25a62f4e5b423da1",
+   "cccd7acc88bcddb1",
+   "c4a777f023fcd5f7",
+   "d8c87ab9f833687b",
+   "04f78461144a772e",
+   "76e1467619c83873",
+   "f088fed576996921",
+   "db69274dbb8499b0",
+   "b8ebf87db11eb345",
+   "43a6878a8cca2070",
+   "ca22089eb6bb47f1",
+   "056bbb91212ceed9",
+   "471e16c13faffba7",
+   "c74f31175e2f4e6a",
+   "a50d0015721fde4a"
   ],
   "sec": [
    "0000891092-01-500491",
