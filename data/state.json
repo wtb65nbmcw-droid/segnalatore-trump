@@ -29,9 +29,6 @@
  },
  "seen": {
   "news": [
-   "03d1c0b5cfbd5e3f",
-   "150db8889fdf01b5",
-   "f38a75978ecd1423",
    "c213c48981d274c3",
    "60af3b555693c003",
    "67f6bcffe08ef0b3",
@@ -1528,7 +1525,10 @@
    "b4eaf73733f29114",
    "2401e8dd96cda52f",
    "5980d3c81bdf14b7",
-   "fbc4fb478800fc0d"
+   "fbc4fb478800fc0d",
+   "b2c5c2f3a358ae37",
+   "e105f9a9b2fbacee",
+   "ff953f91b25b0dad"
   ],
   "sec": [
    "0000891092-01-500491",
