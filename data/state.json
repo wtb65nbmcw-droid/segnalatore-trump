@@ -18,8 +18,7 @@
    "fails": 0
   },
   "wallets": {
-   "fails": 1,
-   "last_error": "TimeoutError: The read operation timed out su https://eth.blockscout.com/api/v2/addresses/0x5be9a4959308a0d0c7bc0870e319314d8d957dbb/token-transfers?type=ER"
+   "fails": 0
   }
  },
  "init": {
@@ -2745,7 +2744,9 @@
    "117537139270355027",
    "117537778762601396",
    "117537953735892928",
-   "117537954946499099"
+   "117537954946499099",
+   "117539069831120488",
+   "117539072419901096"
   ],
   "wallet:0x5be9a4959308a0d0c7bc0870e319314d8d957dbb": [
    "0x4cc6948347e02d3655f9b1ea79fed0a3a2401ddfaa86101414090cdbe1da8563",
