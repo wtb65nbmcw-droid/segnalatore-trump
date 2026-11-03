@@ -18,8 +18,7 @@
    "fails": 0
   },
   "wallets": {
-   "fails": 1,
-   "last_error": "TimeoutError: The read operation timed out su https://eth.blockscout.com/api/v2/addresses/0x5be9a4959308a0d0c7bc0870e319314d8d957dbb/token-transfers?type=ER"
+   "fails": 0
   }
  },
  "init": {
@@ -30,27 +29,6 @@
  },
  "seen": {
   "news": [
-   "e83306e815f6d066",
-   "3e85fd56041e8359",
-   "29d88486c81fd67e",
-   "2ad64f318c1a169d",
-   "2a1ac3fd7bb9cded",
-   "6609b2e91bac47ab",
-   "78559c0c3bc72e18",
-   "c74dc13531e1aef1",
-   "28b994ca74626712",
-   "13154c9ee6ff00fd",
-   "c9e3e9c5f2ad6364",
-   "316e3ca1d5516b0a",
-   "98dc9080b2b184ae",
-   "004b7c31160ed8ec",
-   "9b3d65bb828d85be",
-   "6e7ef7e65ab9b0dc",
-   "51614bce0e1e8e4b",
-   "c3baf4cc4d96073c",
-   "06b7203fa23fafbb",
-   "761f3be88fc6a9a4",
-   "ba687bc044d7c884",
    "f61da6ccb2cc07d2",
    "a27dc623a698865f",
    "8beca3551f0ea41a",
@@ -1529,7 +1507,28 @@
    "3997f169f2e53c34",
    "9cbd71fc44e6e78a",
    "54014cde59ee8086",
-   "fd3e58cabb11a2e3"
+   "fd3e58cabb11a2e3",
+   "403bdb7c3db3528a",
+   "5ea2d609bf5506fa",
+   "74ff038efe29179d",
+   "ceeabc5bf001e3a9",
+   "9468772713bd8da7",
+   "2642eb672b139c09",
+   "804f3fbad07a2ff4",
+   "af25d6e55e6b3017",
+   "706d8e33ff6d8385",
+   "4a2500657b9fb9dd",
+   "14f67e69824429a1",
+   "2ff26e17ae62ee94",
+   "91db9e7872ee17e0",
+   "7661124579e79137",
+   "b9f4e3dca2344683",
+   "68b5945968242b6a",
+   "8d07780409f3edd4",
+   "f2cd9edf01459b05",
+   "ce1c1769eb53818b",
+   "dd1ef004f51b4e3f",
+   "0e0c011467f051d3"
   ],
   "sec": [
    "0000891092-01-500491",
